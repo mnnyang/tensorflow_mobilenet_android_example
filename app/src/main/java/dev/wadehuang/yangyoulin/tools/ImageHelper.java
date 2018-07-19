@@ -1,4 +1,4 @@
-package dev.wadehuang.mobilenetexample.images;
+package dev.wadehuang.yangyoulin.tools;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -6,11 +6,25 @@ import android.media.Image;
 
 import java.nio.ByteBuffer;
 
+/**
+ * 图片编码转换辅助类
+ *
+ * YUV，分为三个分量，“Y”表示明亮度（Luminance或Luma）
+ * ，也就是灰度值；而“U”和“V” 表示的则是色度（Chrominance或Chroma），
+ * 作用是描述影像色彩及饱和度，用于指定像素的颜色。
+ * 与我们熟知的RGB类似，YUV也是一种颜色编码方法，主要用于电视系统以及模拟视频领域，
+ * 它将亮度信息（Y）与色彩信息（UV）分离，没有UV信息一样可以显示完整的图像，只不过是黑白的，
+ * 这样的设计很好地解决了彩色电视机与黑白电视的兼容问题。
+ * 并且，YUV不像RGB那样要求三个独立的视频信号同时传输，所以用YUV方式传送占用极少的频宽。
+ */
 public class ImageHelper {
     private static final int IMAGE_MEAN = 0;
     private static final float IMAGE_STD = 255;
     static final int kMaxChannelValue = 262143;
 
+    /**
+     * bitmap 转换为数组形式
+     */
     public static float[] bitmapToFloat(Bitmap bitmap) {
         int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
         float[] result = new float[bitmap.getWidth() * bitmap.getHeight() * 3];
@@ -29,8 +43,7 @@ public class ImageHelper {
     }
 
     /**
-     * Convert yuv 420 image to Bitmap, use the same Bitmap to save memory
-     *
+     * image 转换为 bitmap 节省内存
      * @param image
      * @return
      */
@@ -161,6 +174,9 @@ public class ImageHelper {
         return arr[pos] & 0xFF;
     }
 
+    /**
+     * yuv编码格式转换为rgb格式
+     */
     private static int YUV2RGB(int nY, int nU, int nV) {
         nY -= 16;
         nU -= 128;

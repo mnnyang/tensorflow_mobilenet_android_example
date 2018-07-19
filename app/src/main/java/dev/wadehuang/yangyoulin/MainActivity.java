@@ -1,9 +1,8 @@
-package dev.wadehuang.mobilenetexample;
+package dev.wadehuang.yangyoulin;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -13,6 +12,7 @@ import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.view.Display;
@@ -25,13 +25,13 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import dev.wadehuang.mobilenetexample.images.ImageClassifier;
-import dev.wadehuang.mobilenetexample.images.ImageHelper;
-import dev.wadehuang.mobilenetexample.images.Recognition;
-import dev.wadehuang.mobilenetexample.views.CameraPreviewFragment;
+import dev.wadehuang.yangyoulin.tools.ImageClassifier;
+import dev.wadehuang.yangyoulin.tools.ImageHelper;
+import dev.wadehuang.yangyoulin.tools.Recognition;
+import dev.wadehuang.yangyoulin.camera.CameraPreviewFragment;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
         implements CameraPreviewFragment.CameraPreviewListener {
 
     private static final String TAG = "MainActivity";
@@ -47,10 +47,14 @@ public class MainActivity extends Activity
     private boolean computing;
     private ImageClassifier imageClassifier;
     private Bitmap bitmap;
+    /**
+     * 剪切图
+     */
     private Bitmap croppedBitmap;
-    private int sensorOrientation;
+    /**
+     * 图像矩阵 剪切使用
+     */
     private Matrix frameToCropTransform;
-    private Matrix cropToFrameTransform;
     private List<Recognition> resultList;
 
     private Runnable updateResult = new Runnable() {
@@ -58,12 +62,6 @@ public class MainActivity extends Activity
         public void run() {
             resultListAdapter.clear();
             resultListAdapter.addAll(resultList);
-
-
-            if (DEBUG_MODE) {
-                previewImageView.setImageDrawable(new BitmapDrawable(getResources(), croppedBitmap));
-            }
-
             computing = false;
         }
     };
@@ -87,24 +85,22 @@ public class MainActivity extends Activity
 
     private void init() {
         resultListView = (ListView) findViewById(R.id.resultList);
-        previewImageView = (ImageView) findViewById(R.id.previewImage);
+//        previewImageView = (ImageView) findViewById(R.id.previewImage);
 
         resultListAdapter = new ArrayAdapter<>(this, R.layout.item_recogition);
         resultListView.setAdapter(this.resultListAdapter);
 
         imageClassifier = new ImageClassifier(this);
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, CameraPreviewFragment.newInstance(this))
                 .commit();
 
-        if (DEBUG_MODE) {
-            previewImageView.setVisibility(View.VISIBLE);
-        } else {
-            previewImageView.setVisibility(View.GONE);
-        }
     }
 
-
+    /**
+     * 摄像头准备预览就绪回调
+     */
     @Override
     public void onPreviewReadied(Size size, int cameraRotation) {
         bitmap = Bitmap.createBitmap(size.getWidth(), size.getHeight(), Bitmap.Config.ARGB_8888);
@@ -113,28 +109,30 @@ public class MainActivity extends Activity
         final Display display = getWindowManager().getDefaultDisplay();
         final int screenOrientation = display.getRotation();
 
-        sensorOrientation = cameraRotation + screenOrientation;
+        int sensorOrientation = cameraRotation + screenOrientation;
+        Log.e(TAG,"sensorOrientation -> "+ sensorOrientation);
 
         frameToCropTransform =
                 ImageHelper.getTransformationMatrix(
                         size.getHeight(), size.getWidth(),
                         ImageClassifier.INPUT_SIZE, ImageClassifier.INPUT_SIZE,
                         sensorOrientation, true);
-
-        cropToFrameTransform = new Matrix();
-        frameToCropTransform.invert(cropToFrameTransform);
     }
 
+    /**
+     * 摄像头最新图像回调
+     */
     @Override
     public void onImageAvailable(ImageReader reader) {
+        /**
+         * 计算中则放弃本次图像的识别
+         */
         if (computing)
             return;
-        ;
-
         Image image = null;
 
         try {
-
+            /*获取最新图片*/
             image = reader.acquireLatestImage();
 
             if (image == null) {
@@ -143,13 +141,15 @@ public class MainActivity extends Activity
 
             computing = true;
 
+            /*image 转换为bitmap*/
             ImageHelper.imageToBitmap(image, bitmap);
 
+            /*剪切图片*/
             final Canvas canvas = new Canvas(croppedBitmap);
             canvas.drawBitmap(bitmap, frameToCropTransform, null);
-
             image.close();
 
+            /*识别图像*/
             resultList = imageClassifier.recognizeImage(croppedBitmap);
 
             runOnUiThread(updateResult);
@@ -164,7 +164,9 @@ public class MainActivity extends Activity
         }
     }
 
-    //region Permission
+    /**
+     * 判断权限
+     */
     private boolean hasPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED;
@@ -173,6 +175,9 @@ public class MainActivity extends Activity
         }
     }
 
+    /**
+     * 申请权限
+     */
     private void requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (shouldShowRequestPermissionRationale(PERMISSION_CAMERA)) {
@@ -183,6 +188,9 @@ public class MainActivity extends Activity
         }
     }
 
+    /**
+     * 申请权限回调
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST) {

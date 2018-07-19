@@ -1,4 +1,4 @@
-package dev.wadehuang.mobilenetexample;
+package dev.wadehuang.yangyoulin;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,30 +1,17 @@
-package dev.wadehuang.mobilenetexample.images;
+package dev.wadehuang.yangyoulin.tools;
 
 import android.graphics.RectF;
 
-/**
- * Created by Wade on 7/18/2017.
- */
 public class Recognition {
-    /**
-     * A unique identifier for what has been recognized. Specific to the class, not the instance of
-     * the object.
-     */
+
     private final String id;
 
-    /**
-     * Display name for the recognition.
-     */
+
     private final String title;
 
-    /**
-     * A sortable score for how good the recognition is relative to others. Higher should be better.
-     */
     private final Float confidence;
 
-    /**
-     * Optional location within the source image for the location of the recognized object.
-     */
+
     private RectF location;
 
     public Recognition(

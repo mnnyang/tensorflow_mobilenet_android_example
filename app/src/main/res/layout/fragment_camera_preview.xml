@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dev.wadehuang.mobilenetexample.views.AutoFitTextureView
+<dev.wadehuang.yangyoulin.camera.AutoFitTextureView
     xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/texture"
         android:layout_width="wrap_content"

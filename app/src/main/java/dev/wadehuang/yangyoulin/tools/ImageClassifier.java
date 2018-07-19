@@ -1,6 +1,5 @@
-package dev.wadehuang.mobilenetexample.images;
+package dev.wadehuang.yangyoulin.tools;
 
-import org.tensorflow.Operation;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 import android.content.Context;
@@ -19,17 +18,37 @@ import java.util.Vector;
 public class ImageClassifier {
     public static final int INPUT_SIZE = 224;
 
+    /**
+     * 最小识别百分比
+     */
     private static final float THRESHOLD = 0.1f;
+
+    /**
+     * 最大结果条数
+     */
     private static final int MAX_RESULTS = 3;
+
+    /**
+     * 模型文件
+     */
     private static final String MODEL_FILE = "mobilenet_v1.pb";
+
     private static final String LABEL_FILE = "labels.txt";
+    /**
+     * label条数
+     */
     private static final int CLASS_SIZE = 1001;
+    /**
+     * 输入层名称
+     */
     private static final String INPUT_NAME = "input";
+    /**
+     * 输出层名称
+     */
     private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Reshape_1";
     private static final String[] OUTPUT_NAMES = {OUTPUT_NAME};
 
     private Context context;
-    private Operation output_op;
     private TensorFlowInferenceInterface tfInterface;
     private Vector<String> labels;
 
@@ -41,7 +60,11 @@ public class ImageClassifier {
         InitLabels();
     }
 
+    /**
+     * 读取labels数据
+     */
     private void InitLabels(){
+        /*Vector > 线程安全的动态数组*/
         labels = new Vector<>(CLASS_SIZE);
         try {
             BufferedReader br = null;
@@ -57,11 +80,14 @@ public class ImageClassifier {
         }
     }
 
+    /**
+     * 识别图片
+     */
     public List<Recognition> recognizeImage(final Bitmap bitmap) {
         return  recognizeImage(ImageHelper.bitmapToFloat(bitmap));
     }
 
-    public List<Recognition> recognizeImage(final float[] imageFloats) {
+    private List<Recognition> recognizeImage(final float[] imageFloats) {
 
         this.tfInterface.feed(INPUT_NAME, imageFloats, 1, INPUT_SIZE, INPUT_SIZE, 3);
 
@@ -70,8 +96,7 @@ public class ImageClassifier {
         float[] outputs = new float[CLASS_SIZE];
         this.tfInterface.fetch(OUTPUT_NAME, outputs);
 
-        PriorityQueue<Recognition> pq =
-                new PriorityQueue<>(
+        PriorityQueue<Recognition> pq = new PriorityQueue<>(
                         3,
                         new Comparator<Recognition>() {
                             @Override
@@ -81,6 +106,7 @@ public class ImageClassifier {
                         });
 
         for (int i = 0; i < outputs.length; ++i) {
+            /*获取大于最小百分比的内容*/
             if (outputs[i] > THRESHOLD) {
                 pq.add(new Recognition("" + i, labels.get(i), outputs[i], null));
             }

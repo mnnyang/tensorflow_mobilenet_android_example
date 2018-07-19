@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.wadehuang.mobilenetexample.views;
+package dev.wadehuang.yangyoulin.camera;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -61,8 +61,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import dev.wadehuang.mobilenetexample.R;
+import dev.wadehuang.yangyoulin.R;
 
+/**
+ * 摄像头预览辅助fragment
+ */
 public class CameraPreviewFragment extends Fragment {
 
     public interface CameraPreviewListener

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#333"
-    tools:context="dev.wadehuang.mobilenetexample.MainActivity">
+    tools:context="dev.wadehuang.yangyoulin.MainActivity">
 
     <FrameLayout
         android:id="@+id/container"
@@ -17,16 +17,7 @@
         tools:layout_height="300dp"
         tools:layout_width="match_parent" />
 
-    <ImageView
-        android:id="@+id/previewImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_height="114dp"
-        tools:layout_width="114dp" />
+
 
     <TextView
         android:id="@+id/title"
@@ -36,6 +27,7 @@
         android:gravity="center"
         android:text="This is"
         android:textColor="@android:color/white"
+        android:visibility="gone"
         android:textSize="32sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -51,5 +43,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/container" />
 </android.support.constraint.ConstraintLayout>

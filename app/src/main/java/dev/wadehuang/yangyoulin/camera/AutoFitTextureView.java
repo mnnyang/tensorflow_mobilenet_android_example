@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.wadehuang.mobilenetexample.views;
+package dev.wadehuang.yangyoulin.camera;
 
 import android.content.Context;
 import android.util.AttributeSet;

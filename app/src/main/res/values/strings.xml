@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MobilenetExample</string>
-    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="app_name">识别分类</string>
+    <string name="camera_error">这个设备不支持 Camera2 API.</string>
 </resources>
